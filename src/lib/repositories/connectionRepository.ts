@@ -76,4 +76,39 @@ export const connectionRepository = {
       userId,
     );
   },
+
+  async findById(id: number): Promise<ConnectionRow | undefined> {
+    const db = await getDb();
+    return db.get<ConnectionRow>("SELECT * FROM connections WHERE id = ?", id);
+  },
+
+  async delete(id: number): Promise<void> {
+    const db = await getDb();
+    await db.run("DELETE FROM connections WHERE id = ?", id);
+  },
+
+  async update(
+    id: number,
+    updates: Record<string, unknown>,
+  ): Promise<ConnectionRow> {
+    const db = await getDb();
+    const keys = Object.keys(updates);
+    const setClause = keys.map((k) => `${k} = ?`).join(", ");
+    const values = Object.values(updates);
+
+    await db.run(`UPDATE connections SET ${setClause} WHERE id = ?`, [
+      ...values,
+      id,
+    ]);
+
+    const updated = await db.get<ConnectionRow>(
+      "SELECT * FROM connections WHERE id = ?",
+      id,
+    );
+    if (!updated) {
+      throw new Error("Failed to update connection");
+    }
+
+    return updated;
+  },
 };

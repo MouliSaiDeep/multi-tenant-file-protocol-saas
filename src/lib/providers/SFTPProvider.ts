@@ -96,15 +96,27 @@ export class SFTPProvider implements FileSystemProvider {
   async delete(path: string): Promise<void> {
     try {
       await this.ensureConnected();
-      await new Promise<void>((resolve, reject) => {
-        this.sftp.unlink(path, (err: Error | null) => {
-          if (err) {
-            reject(err);
-            return;
-          }
-          resolve();
+      try {
+        await new Promise<void>((resolve, reject) => {
+          this.sftp.unlink(path, (err: Error | null) => {
+            if (err) {
+              reject(err);
+              return;
+            }
+            resolve();
+          });
         });
-      });
+      } catch {
+        await new Promise<void>((resolve, reject) => {
+          this.sftp.rmdir(path, (err: Error | null) => {
+            if (err) {
+              reject(err);
+              return;
+            }
+            resolve();
+          });
+        });
+      }
     } catch (error) {
       throw toUnifiedError(error);
     }

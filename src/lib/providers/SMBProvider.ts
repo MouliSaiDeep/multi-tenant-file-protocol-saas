@@ -97,7 +97,13 @@ export class SMBProvider implements FileSystemProvider {
   async delete(path: string): Promise<void> {
     try {
       const smbPath = this.normalizeSmbPath(path);
-      await promisifyCall<void>((cb) => this.client.unlink(smbPath, cb));
+      try {
+        await promisifyCall<void>((cb) => this.client.unlink(smbPath, cb));
+      } catch {
+        await promisifyCall<void>((cb) =>
+          (this.client as any).rmdir?.(smbPath, cb),
+        );
+      }
     } catch (error) {
       throw toUnifiedError(error);
     }

@@ -69,7 +69,11 @@ export class FTPProvider implements FileSystemProvider {
   async delete(path: string): Promise<void> {
     try {
       await this.ensureConnected();
-      await this.client.remove(path);
+      try {
+        await this.client.remove(path);
+      } catch {
+        await this.client.removeDir(path);
+      }
     } catch (error) {
       throw toUnifiedError(error);
     }

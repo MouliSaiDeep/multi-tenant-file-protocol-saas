@@ -39,11 +39,8 @@ export function toUnifiedError(error: unknown): FileSystemError {
     msg.includes("auth") ||
     msg.includes("login") ||
     msg.includes("530") ||
-    msg.includes("denied") ||
     msg.includes("logon_failure") ||
     msg.includes("logon failure") ||
-    msg.includes("access_denied") ||
-    msg.includes("access denied") ||
     msg.includes("invalid credentials") ||
     msg.includes("wrong password") ||
     msg.includes("bad password") ||
@@ -69,6 +66,9 @@ export function toUnifiedError(error: unknown): FileSystemError {
   if (
     msg.includes("permission") ||
     msg.includes("forbidden") ||
+    msg.includes("access denied") ||
+    msg.includes("access_denied") ||
+    msg.includes("denied") ||
     msg.includes("status_sharing_violation")
   ) {
     return new FileSystemError("PERMISSION_DENIED", undefined, 403);

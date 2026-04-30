@@ -1,84 +1,121 @@
-:root {
-  --bg: #f4f2eb;
-  --panel: #fffdf5;
-  --ink: #1f1a14;
-  --accent: #1f6f5f;
-  --accent-2: #ea5f2d;
-  --muted: #786d5d;
-  --border: #dfd6c7;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 * {
-  box-sizing: border-box;
+  @apply transition-colors duration-150;
 }
 
+html,
 body {
-  margin: 0;
-  font-family: "Space Grotesk", "Segoe UI", sans-serif;
-  background: radial-gradient(circle at top right, #fce7d2, var(--bg) 35%);
-  color: var(--ink);
+  @apply min-h-screen bg-slate-900 text-slate-100 antialiased;
 }
 
-a {
-  color: inherit;
-}
-
-main {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 2rem 1rem 4rem;
-}
-
+/* Cards */
 .card {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 1rem;
-  box-shadow: 0 14px 40px rgba(40, 30, 20, 0.06);
+  @apply rounded-lg bg-slate-800 border border-slate-700 shadow-md;
 }
 
-input,
-select,
-button {
-  font: inherit;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  padding: 0.55rem 0.7rem;
+.card-inner {
+  @apply p-6;
 }
 
-button {
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  cursor: pointer;
+/* Inputs */
+.input {
+  @apply w-full rounded-lg border border-slate-600 bg-slate-900 px-4 py-2 text-slate-100 placeholder-slate-500 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none;
 }
 
-button.secondary {
-  background: var(--accent-2);
+.input:disabled {
+  @apply bg-slate-700 text-slate-500 cursor-not-allowed;
 }
 
-.grid {
-  display: grid;
-  gap: 1rem;
+/* Buttons */
+.btn {
+  @apply inline-flex items-center justify-center rounded-lg font-medium transition-colors duration-150;
 }
 
-.grid.two {
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+.btn-primary {
+  @apply btn px-4 py-2 bg-teal-500 text-slate-900 hover:bg-teal-400 disabled:bg-slate-600 disabled:text-slate-400 disabled:cursor-not-allowed;
 }
 
+.btn-primary-sm {
+  @apply btn px-3 py-1.5 bg-teal-500 text-slate-900 hover:bg-teal-400;
+}
+
+.btn-secondary {
+  @apply btn px-4 py-2 bg-slate-700 text-slate-100 border border-slate-600 hover:bg-slate-600 disabled:opacity-50;
+}
+
+.btn-secondary-sm {
+  @apply btn px-3 py-1.5 bg-slate-700 text-slate-100 border border-slate-600 hover:bg-slate-600;
+}
+
+.btn-danger {
+  @apply btn px-4 py-2 bg-slate-700 text-red-400 border border-red-900/30 hover:bg-red-900/20;
+}
+
+.btn-link {
+  @apply text-teal-400 hover:text-teal-300 font-medium cursor-pointer;
+}
+
+/* Tables */
 .table {
-  width: 100%;
-  border-collapse: collapse;
+  @apply w-full border-collapse;
+}
+
+.table thead tr {
+  @apply border-b border-slate-700 text-slate-400;
+}
+
+.table tbody tr {
+  @apply border-b border-slate-700/50 hover:bg-slate-700/30;
 }
 
 .table th,
 .table td {
-  border-bottom: 1px solid var(--border);
-  padding: 0.6rem;
-  text-align: left;
+  @apply px-4 py-3 text-left;
 }
 
-.small {
-  font-size: 0.9rem;
-  color: var(--muted);
+/* Modal */
+.modal-backdrop {
+  @apply fixed inset-0 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm;
+}
+
+.modal-content {
+  @apply card card-inner w-full max-w-lg;
+}
+
+/* Badges */
+.badge {
+  @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium;
+}
+
+.badge-sftp {
+  @apply bg-cyan-500/20 text-cyan-300 border border-cyan-500/30;
+}
+
+.badge-ftp {
+  @apply bg-amber-500/20 text-amber-300 border border-amber-500/30;
+}
+
+.badge-smb {
+  @apply bg-purple-500/20 text-purple-300 border border-purple-500/30;
+}
+
+.badge-success {
+  @apply bg-emerald-500/20 text-emerald-300 border border-emerald-500/30;
+}
+
+/* Utility */
+.text-muted {
+  @apply text-slate-400;
+}
+
+.skeleton {
+  @apply bg-slate-700/50 animate-pulse rounded;
+}
+
+/* Empty state */
+.empty-state {
+  @apply flex flex-col items-center justify-center py-12 text-center text-slate-400;
 }

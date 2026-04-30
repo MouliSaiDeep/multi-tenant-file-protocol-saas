@@ -72,8 +72,8 @@ services:
   smb_server:
     image: dperson/samba:latest
     ports:
-      - "139:139"
-      - "445:445"
+      - "1139:139"
+      - "1445:445"
     command: -u "testuser;pass123" -s "public;/share;yes;no;yes;all"
     healthcheck:
       test: ["CMD-SHELL", "ps | grep smbd || exit 1"]

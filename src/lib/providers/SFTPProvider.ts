@@ -69,10 +69,10 @@ export class SFTPProvider implements FileSystemProvider {
   async download(path: string): Promise<Readable> {
     try {
       await this.ensureConnected();
-      return await new Promise<Readable>((resolve, reject) => {
+      return new Promise<Readable>((resolve, reject) => {
         const stream = this.sftp.createReadStream(path);
-        stream.on("ready", () => resolve(stream));
-        stream.on("error", (err: Error) => reject(err));
+        stream.on("open", () => resolve(stream));
+        stream.on("error", (err: Error) => reject(toUnifiedError(err)));
       });
     } catch (error) {
       throw toUnifiedError(error);

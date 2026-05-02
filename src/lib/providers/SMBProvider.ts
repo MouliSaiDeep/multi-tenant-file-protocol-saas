@@ -33,21 +33,27 @@ export class SMBProvider implements FileSystemProvider {
     });
   }
 
+  private normalizeSmbPath(path: string): string {
+    if (path === "/") return "";
+    return path.replace(/^\//, "").replace(/\//g, "\\");
+  }
+
   async list(path: string): Promise<FileEntry[]> {
     try {
+      const smbPath = this.normalizeSmbPath(path);
       const names = await promisifyCall<string[]>((cb) =>
-        this.client.readdir(path, cb),
+        this.client.readdir(smbPath, cb),
       );
 
       const entries = await Promise.all(
         names.map(async (name) => {
-          const fullPath = `${path.replace(/\/$/, "")}/${name}`;
+          const fullPath = smbPath ? `${smbPath}\\${name}` : name;
           const stat = await promisifyCall<any>((cb) =>
             this.client.stat(fullPath, cb),
           );
           return {
             name,
-            type: stat.isDirectory() ? "d" : "f",
+            type: stat.isDirectory() ? "d" : ("f" as "d" | "f"),
             size: Number(stat.size || 0),
             modifiedAt: stat.mtime ? new Date(stat.mtime) : new Date(),
           } as FileEntry;
@@ -62,8 +68,9 @@ export class SMBProvider implements FileSystemProvider {
 
   async download(path: string): Promise<Readable> {
     try {
+      const smbPath = this.normalizeSmbPath(path);
       const data = await promisifyCall<Buffer>((cb) =>
-        this.client.readFile(path, cb),
+        this.client.readFile(smbPath, cb),
       );
       return Readable.from(data);
     } catch (error) {
@@ -73,13 +80,14 @@ export class SMBProvider implements FileSystemProvider {
 
   async upload(path: string, stream: Readable): Promise<void> {
     try {
+      const smbPath = this.normalizeSmbPath(path);
       const chunks: Buffer[] = [];
       for await (const chunk of stream) {
         chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
       }
       const payload = Buffer.concat(chunks);
       await promisifyCall<void>((cb) =>
-        this.client.writeFile(path, payload, cb),
+        this.client.writeFile(smbPath, payload, cb),
       );
     } catch (error) {
       throw toUnifiedError(error);
@@ -88,7 +96,8 @@ export class SMBProvider implements FileSystemProvider {
 
   async delete(path: string): Promise<void> {
     try {
-      await promisifyCall<void>((cb) => this.client.unlink(path, cb));
+      const smbPath = this.normalizeSmbPath(path);
+      await promisifyCall<void>((cb) => this.client.unlink(smbPath, cb));
     } catch (error) {
       throw toUnifiedError(error);
     }
@@ -96,7 +105,11 @@ export class SMBProvider implements FileSystemProvider {
 
   async rename(from: string, to: string): Promise<void> {
     try {
-      await promisifyCall<void>((cb) => this.client.rename(from, to, cb));
+      const fromPath = this.normalizeSmbPath(from);
+      const toPath = this.normalizeSmbPath(to);
+      await promisifyCall<void>((cb) =>
+        this.client.rename(fromPath, toPath, cb),
+      );
     } catch (error) {
       throw toUnifiedError(error);
     }

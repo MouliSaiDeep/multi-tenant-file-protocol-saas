@@ -8,7 +8,11 @@ export async function GET() {
 
     if (auth.role !== "admin") {
       return NextResponse.json(
-        { success: false, error: "FORBIDDEN" },
+        {
+          success: false,
+          code: "FORBIDDEN",
+          message: "You do not have permission to access this resource.",
+        },
         { status: 403 },
       );
     }
@@ -18,7 +22,11 @@ export async function GET() {
   } catch (error) {
     if (error instanceof Error && error.message === "UNAUTHORIZED") {
       return NextResponse.json(
-        { success: false, error: "UNAUTHORIZED" },
+        {
+          success: false,
+          code: "UNAUTHORIZED",
+          message: "Authentication required.",
+        },
         { status: 401 },
       );
     }

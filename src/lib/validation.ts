@@ -12,6 +12,9 @@ export const connectionSchema = z.object({
 });
 
 export function validateSafePath(path: string): boolean {
+  if (!path || path.trim().length === 0) {
+    return false;
+  }
   if (!path.startsWith("/")) {
     return false;
   }

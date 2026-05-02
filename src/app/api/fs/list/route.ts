@@ -39,7 +39,11 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     if (error instanceof Error && error.message === "UNAUTHORIZED") {
       return NextResponse.json(
-        { success: false, error: "UNAUTHORIZED" },
+        {
+          success: false,
+          code: "UNAUTHORIZED",
+          message: "Authentication required.",
+        },
         { status: 401 },
       );
     }

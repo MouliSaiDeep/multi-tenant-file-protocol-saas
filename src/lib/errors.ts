@@ -32,28 +32,56 @@ export function toUnifiedError(error: unknown): FileSystemError {
   }
 
   const msg = error instanceof Error ? error.message.toLowerCase() : "";
+  const rawMsg = error instanceof Error ? error.message : "";
 
+  // Auth failures — covers SFTP, FTP 530, SMB STATUS_LOGON_FAILURE / STATUS_ACCESS_DENIED
   if (
     msg.includes("auth") ||
     msg.includes("login") ||
     msg.includes("530") ||
-    msg.includes("denied")
+    msg.includes("denied") ||
+    msg.includes("logon_failure") ||
+    msg.includes("logon failure") ||
+    msg.includes("access_denied") ||
+    msg.includes("access denied") ||
+    msg.includes("invalid credentials") ||
+    msg.includes("wrong password") ||
+    msg.includes("bad password") ||
+    msg.includes("unauthorized") ||
+    msg.includes("status_logon") ||
+    msg.includes("status_access") ||
+    rawMsg.includes("C000006D") ||
+    rawMsg.includes("C0000022")
   ) {
     return new FileSystemError("AUTH_FAILED");
   }
 
-  if (msg.includes("not found") || msg.includes("no such file")) {
+  if (
+    msg.includes("not found") ||
+    msg.includes("no such file") ||
+    msg.includes("no such path") ||
+    msg.includes("status_object_name_not_found") ||
+    msg.includes("object_name_not_found")
+  ) {
     return new FileSystemError("NOT_FOUND", undefined, 404);
   }
 
-  if (msg.includes("permission")) {
+  if (
+    msg.includes("permission") ||
+    msg.includes("forbidden") ||
+    msg.includes("status_sharing_violation")
+  ) {
     return new FileSystemError("PERMISSION_DENIED", undefined, 403);
   }
 
   if (
     msg.includes("connect") ||
     msg.includes("timeout") ||
-    msg.includes("econn")
+    msg.includes("econn") ||
+    msg.includes("econnrefused") ||
+    msg.includes("enotfound") ||
+    msg.includes("socket hang up") ||
+    msg.includes("network")
   ) {
     return new FileSystemError("CONNECTION_FAILED", undefined, 400);
   }

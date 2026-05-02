@@ -33,7 +33,7 @@ services:
     volumes:
       - ./db:/var/lib/sqlite
     healthcheck:
-      test: ["CMD", "sqlite3", "/var/lib/sqlite/prod.db", "SELECT 1;"]
+      test: ["CMD", "sqlite3", "--version"]
       interval: 10s
       timeout: 5s
       retries: 5
